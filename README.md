@@ -121,54 +121,24 @@ main.py
 ## ✨ Nouvelles Fonctionnalités
 
 ### 1. Détection Automatique des Variations
-Détecte dans les commentaires:
-- **Altérée**: mots-clés = `['altérée', 'altered', 'alter', 'playset']`
-- **Foil**: mots-clés = `['foil', 'brillante']`
-- **Signée**: mots-clés = `['signé', 'signed', 'signature']`
-
 Résultats en colonnes CSV:
-- `Altered`: "Oui" ou "Non"
-- `Foil`: "Oui" ou "Non"
-- `Signed`: "Oui" ou "Non"
+- `Altered`: "True" ou "False"
+- `Foil`: "True" ou "False"
+- `Signed`: "True" ou "False"
 
 ### 2. Pagination Automatique avec &site=X
 - L'URL est automatiquement enrichie de `&site=1`
 - Permet une navigation correcte entre les pages
 - Paramètre modifié automatiquement pour chaque page suivante
 
-### 3. Organisation Modulaire
-- Séparation claire des responsabilités
-- Code réutilisable et testable
-- Facile d'ajouter de nouvelles fonctionnalités
-
 ## 📊 Exemple de Sortie CSV
 
 ```csv
 Name,Set,Condition,Language,Comments,Price,Number,Altered,Foil,Signed
-Aladdin's Ring,Foreign Black Bordered,NM,French,,12,00 €,1,Non,Non,Non
-Black Lotus,Limited Edition,VG,English,Slightly played,1500,00 €,1,Oui,Non,Non
-Ancestral Vision,Time Spiral,NM,French,Foil,11,80 €,1,Non,Oui,Non
-Ancient Tomb,Tempest,EX,German,Signé par l'auteur,45,00 €,1,Non,Non,Oui
-```
-
-## 🛠️ Développement Futur
-
-Facile à ajouter:
-- [ ] Export en d'autres formats (Excel, JSON)
-- [ ] Filtrage avancé (par condition, prix, etc.)
-- [ ] Sauvegarde en base de données
-- [ ] Interface graphique
-- [ ] Notifications de changement de prix
-- [ ] Historique des prix
-
-## ⚙️ Configuration
-
-Modifier les mots-clés de détection dans `src/utils/selectors.py`:
-
-```python
-ALTERED_KEYWORDS = ['altérée', 'altered', 'alter', 'playset']
-FOIL_KEYWORDS = ['foil', 'brillante']
-SIGNED_KEYWORDS = ['signé', 'signed', 'signature']
+Aladdin's Ring,Foreign Black Bordered,NM,French,,"12,00 €",1,False,False,False
+Black Lotus,Limited Edition,VG,English,Slightly played,"1500,00 €",1,True,False,False
+Ancestral Vision,Time Spiral,NM,French,Foil,"11,80 €",1,False,True,False
+Ancient Tomb,Tempest,EX,German,Signé par l'auteur,"45,00 €",1,False,False,True
 ```
 
 ## 📝 Logs

@@ -10,7 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
 from ..models.card import MagicCard
-from ..utils.selectors import ALTERED_KEYWORDS, FOIL_KEYWORDS, SIGNED_KEYWORDS
+from ..utils.selectors import CSS_SELECTORS
 
 logger = logging.getLogger(__name__)
 
@@ -109,23 +109,14 @@ class CardExtractor:
         qty_element = article.select_one('.amount-container .item-count')
         quantity = qty_element.get_text(strip=True) if qty_element else 'N/A'
         
-        # Détecter les propriétés spéciales via les icônes st_SpecialIcon
-        special_icons = [
-            span.get('data-bs-original-title', '').lower()
-            for span in article.select('span.st_SpecialIcon[data-bs-original-title]')
-        ]
-        is_foil = 'foil' in special_icons
-        is_altered = any(kw in icon for icon in special_icons for kw in ALTERED_KEYWORDS)
-        is_signed = any(kw in icon for icon in special_icons for kw in SIGNED_KEYWORDS)
-        
-        # Fallback : aussi chercher dans les commentaires
-        comments_lower = comments.lower()
-        if not is_foil:
-            is_foil = any(keyword in comments_lower for keyword in FOIL_KEYWORDS)
-        if not is_altered:
-            is_altered = any(keyword in comments_lower for keyword in ALTERED_KEYWORDS)
-        if not is_signed:
-            is_signed = any(keyword in comments_lower for keyword in SIGNED_KEYWORDS)
+        # Détecter les propriétés spéciales via data-bs-original-title exact
+        special_titles = {
+            span.get('data-bs-original-title', '')
+            for span in article.select('span[data-bs-original-title]')
+        }
+        is_foil = 'Foil' in special_titles
+        is_altered = bool(special_titles & {'Altérée', 'Altered'})
+        is_signed = bool(special_titles & {'Signé', 'Signed'})
         
         return MagicCard(
             name=name,

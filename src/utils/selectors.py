@@ -15,8 +15,3 @@ CSS_SELECTORS = {
     'foil': '.foil-badge',  # À vérifier dans le HTML
     'signed': '.signed-badge',  # À vérifier dans le HTML
 }
-
-# Critères pour détecter les variations (valeurs data-bs-original-title des icônes st_SpecialIcon)
-ALTERED_KEYWORDS = ['altérée', 'altered', 'alter']
-FOIL_KEYWORDS = ['foil', 'brillante']
-SIGNED_KEYWORDS = ['signé', 'signed', 'signature']
