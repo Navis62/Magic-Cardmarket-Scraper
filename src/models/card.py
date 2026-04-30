@@ -3,11 +3,12 @@ Modèle de données pour une carte Magic
 """
 
 from dataclasses import dataclass, asdict
+import re
 
 
 LANGUAGE_ALIASES = {
-    "Chinese Simplified": "S-Chinese",
-    "Chinese Traditional": "T-Chinese"
+    "S-Chinese": "Chinese Simplified",
+    "T-Chinese": "Chinese Traditional"
 }
 
 EXPANSION_ALIASES = {
@@ -20,7 +21,9 @@ EXPANSION_ALIASES = {
     "Fourth Edition: Black Bordered": "Fourth Edition Foreign Black Border",
     "Chronicles: Japanese": "Chronicles Foreign Black Border",
     "MagicFest Promos": "Secret Lair Promo",
-    "MagicCon Products": "Secret Lair Drop"
+    "MagicCon Products": "Secret Lair Drop",
+    "Secrets of Strixhaven: Mystical Archive": "Secrets of Strixhaven Mystical Archive",
+    "Strixhaven: Mystical Archive": "Strixhaven Mystical Archive"
 }
 
 @dataclass
@@ -43,6 +46,9 @@ class MagicCard:
         """Convertit la carte en dictionnaire"""
         return asdict(self)
     
+    def _normalize_name(self) -> str:
+        return re.sub(r' \(V\.\d+\)$', '', self.name)
+
     def _normalize_expansion(self) -> str:
         if self.rarity == "Time Shifted":
             return "Time Spiral Timeshifted"
@@ -62,7 +68,7 @@ class MagicCard:
     def to_csv_row(self) -> dict:
         """Convertit la carte en ligne CSV avec tous les champs"""
         return {
-            'Name': self.name,
+            'Name': self._normalize_name(),
             'Expansion': self._normalize_expansion(),
             'Condition': 'NM' if self.condition == 'MT' else self.condition,
             'Language': self._normalize_language(),
