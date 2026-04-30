@@ -5,6 +5,24 @@ Modèle de données pour une carte Magic
 from dataclasses import dataclass, asdict
 
 
+LANGUAGE_ALIASES = {
+    "Chinese Simplified": "S-Chinese",
+    "Chinese Traditional": "T-Chinese"
+}
+
+EXPANSION_ALIASES = {
+    "Foreign Black Bordered": "Foreign Black Border",
+    "Unlimited": "Unlimited Edition",
+    "Ravnica Remastered: Extras": "Ravnica Remastered",
+    "Alpha": "Limited Edition Alpha",
+    "Beta": "Limited Edition Beta",
+    "Legends Italian": "Legends",
+    "Fourth Edition: Black Bordered": "Fourth Edition Foreign Black Border",
+    "Chronicles: Japanese": "Chronicles Foreign Black Border",
+    "MagicFest Promos": "Secret Lair Promo",
+    "MagicCon Products": "Secret Lair Drop"
+}
+
 @dataclass
 class MagicCard:
     """Représentation d'une carte Magic Cardmarket"""
@@ -16,6 +34,7 @@ class MagicCard:
     comments: str
     price: str
     quantity: str
+    rarity: str = 'N/A'
     is_altered: bool = False
     is_foil: bool = False
     is_signed: bool = False
@@ -24,25 +43,42 @@ class MagicCard:
         """Convertit la carte en dictionnaire"""
         return asdict(self)
     
+    def _normalize_expansion(self) -> str:
+        if self.rarity == "Time Shifted":
+            return "Time Spiral Timeshifted"
+        if self.card_set.startswith("Secret Lair Drop"):
+            return "Secret Lair Drop"
+        if self.card_set.startswith("Commander: "):
+            return self.card_set[len("Commander: "):] + " Commander"
+        if self.card_set.endswith(": Promos"):
+            return self.card_set[:-len(": Promos")] + " Promos"
+        if self.card_set.endswith(": Extras"):
+            return self.card_set[:-len(": Extras")]
+        return EXPANSION_ALIASES.get(self.card_set, self.card_set)
+
+    def _normalize_language(self) -> str:
+        return LANGUAGE_ALIASES.get(self.language, self.language)
+
     def to_csv_row(self) -> dict:
         """Convertit la carte en ligne CSV avec tous les champs"""
         return {
             'Name': self.name,
-            'Set': self.card_set,
-            'Condition': self.condition,
-            'Language': self.language,
+            'Expansion': self._normalize_expansion(),
+            'Condition': 'NM' if self.condition == 'MT' else self.condition,
+            'Language': self._normalize_language(),
+            'Rarity': self.rarity,
             'Comments': self.comments,
             'Price': self.price,
-            'Number': self.quantity,
-            'Altered': 'True' if self.is_altered else 'False',
-            'Foil': 'True' if self.is_foil else 'False',
-            'Signed': 'True' if self.is_signed else 'False',
+            'Quantity': self.quantity,
+            'Altered': 'Altered' if self.is_altered else 'Non-Altered',
+            'Foil': 'Foil' if self.is_foil else 'Non-Foil',
+            'Signed': 'Signed' if self.is_signed else 'Non-Signed',
         }
     
     @classmethod
     def csv_fieldnames(cls) -> list:
         """Retourne les noms des colonnes CSV"""
         return [
-            'Name', 'Set', 'Condition', 'Language', 'Comments', 
-            'Price', 'Number', 'Altered', 'Foil', 'Signed'
+            'Name', 'Expansion', 'Condition', 'Language', 'Rarity', 'Comments', 
+            'Price', 'Quantity', 'Altered', 'Foil', 'Signed'
         ]

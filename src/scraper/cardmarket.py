@@ -169,6 +169,22 @@ class CardmarketScraper:
             logger.info("✓ Pas de page suivante")
             return False
     
+    @staticmethod
+    def _normalize_url_to_english(url: str) -> str:
+        """
+        S'assure que l'URL utilise la version anglaise du site (/en/).
+        Remplace toute autre langue (ex: /fr/, /de/) par /en/.
+        """
+        import re
+        normalized = re.sub(
+            r'^(https://www\.cardmarket\.com/)[a-z]{2}(-[a-z]{2})?(/)',
+            r'\1en\3',
+            url
+        )
+        if normalized != url:
+            logger.info(f"🌐 Langue détectée, redirection vers la version anglaise: {normalized}")
+        return normalized
+
     def _build_paginated_url(self, base_url: str, page: int) -> str:
         """
         Construit l'URL avec le paramètre de pagination site=X
@@ -212,6 +228,7 @@ class CardmarketScraper:
         """
         try:
             current_page = 1
+            start_url = self._normalize_url_to_english(start_url)
             
             logger.info(f"\n🚀 Début du scraping...")
             logger.info(f"📄 URL: {start_url}")

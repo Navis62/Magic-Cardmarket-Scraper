@@ -97,6 +97,12 @@ class CardExtractor:
                 language = label
                 break
         
+        # Rareté - svg.me-2 avec data-bs-original-title
+        rarity = 'N/A'
+        rarity_element = article.select_one('svg.me-2[data-bs-original-title]')
+        if rarity_element:
+            rarity = rarity_element.get('data-bs-original-title', 'N/A')
+        
         # Commentaires - product-comments span
         comments_element = article.select_one('.product-comments span')
         comments = comments_element.get_text(strip=True) if comments_element else ''
@@ -126,6 +132,7 @@ class CardExtractor:
             comments=comments,
             price=price,
             quantity=quantity,
+            rarity=rarity,
             is_altered=is_altered,
             is_foil=is_foil,
             is_signed=is_signed
